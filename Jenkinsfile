@@ -41,8 +41,8 @@ pipeline {
                         emailext(
                             subject: 'CRON Jobs Offline',
                             body: emailBody,
-                            to: 'giovanni.harrius@sat.co.id',
-                            replyTo: 'giovanni.harrius@sat.co.id'
+                            to: 'giovanniharrius@gmail.com',
+                            replyTo: 'giovanniharrius@gmail.com'
                         )
                     }
                 }
