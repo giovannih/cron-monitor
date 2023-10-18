@@ -12,8 +12,8 @@ pipeline {
         stage('Monitor CRON Jobs') {
             steps {
                 script {
-                    def scriptPath = "${WORKSPACE}\\monitor_cron_jobs.py"
-                    bat "python ${scriptPath}"
+                    def scriptPath = "${WORKSPACE}/check_cron_jobs.py"
+                    sh "python ${scriptPath}"
                 }
             }
         }
