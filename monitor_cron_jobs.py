@@ -5,7 +5,6 @@ def check_cron_jobs_status():
     # Database connection parameters
     db_params = {
         'database': 'postgres',
-        'table': 'cron_jobs',
         'user': 'postgres',
         'password': '123456',
         'host': 'localhost',
