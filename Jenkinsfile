@@ -21,8 +21,11 @@ pipeline {
         stage('Send Email Notifications') {
             steps {
                 script {
-                    // Check the status of your jobs and send email notifications if needed
-                    if (check_cron_jobs_status) {
+                    // Call the Python script to check the job status
+                    def scriptPath = "${WORKSPACE}\\monitor_cron_jobs.py"
+                    def isJobOffline = bat(script: "python ${scriptPath}", returnStatus: true)
+
+                    if (isJobOffline == 0) {
                         emailext(
                             subject: 'CRON Job Offline',
                             body: 'One or more CRON jobs are offline.',
@@ -33,5 +36,6 @@ pipeline {
                 }
             }
         }
+
     }
 }
