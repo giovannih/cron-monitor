@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
                     def scriptPath = "${WORKSPACE}\\monitor_cron_jobs.py"
-                    def scriptOutput = bat(script: "python ${scriptPath}", returnStatus: true, returnStdout: true).trim()
+                    def scriptOutput = bat(script: "python ${scriptPath}", returnStatus: true, returnStdout: true)
                     // Capture the script's output for later use
                     currentBuild.description = scriptOutput
                 }
