@@ -1,5 +1,4 @@
 import psycopg2
-from datetime import datetime
 
 def check_cron_jobs_status():
     # Database connection parameters
@@ -18,13 +17,25 @@ def check_cron_jobs_status():
     # Query to select job_name and is_online from the cron_jobs table
     query = "SELECT job_name, is_online FROM cron_jobs"
 
+    # Create a list to store the names of offline jobs
+    offline_jobs = []
+
     try:
         cursor.execute(query)
         records = cursor.fetchall()
         for record in records:
             job_name, is_online = record
             if not is_online:
-                print(f'Job Name: {job_name}, Status: Offline')
+                offline_jobs.append(job_name)  # Add the offline job name to the list
+
+        # Check if there are offline jobs
+        if offline_jobs:
+            # Print the names of offline jobs
+            print("The following CRON jobs are offline:")
+            for job_name in offline_jobs:
+                print(f'- {job_name}')
+        else:
+            print("All CRON jobs are online.")
 
     except Exception as e:
         print(f"Error: {str(e)}")
@@ -34,4 +45,3 @@ def check_cron_jobs_status():
 
 if __name__ == "__main__":
     check_cron_jobs_status()
-
