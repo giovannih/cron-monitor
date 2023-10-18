@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
                     def scriptPath = "${WORKSPACE}/check_cron_jobs.py"
-                    sh "python ${scriptPath}"
+                    bat "python ${scriptPath}"
                 }
             }
         }
@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     // Check the status of your jobs and send email notifications if needed
-                    if (check_cron_jobs_status()) {
+                    if (check_cron_jobs_status) {
                         emailext(
                             subject: 'CRON Job Offline',
                             body: 'One or more CRON jobs are offline.',
