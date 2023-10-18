@@ -12,9 +12,8 @@ pipeline {
         stage('Monitor CRON Jobs') {
             steps {
                 script {
-                    def workspacePath = pwd()
-                    // Run your monitoring script
-                    sh "python ${workspacePath}/monitor_cron_jobs.py"
+                    // Run the Python script to check the job status
+                    sh 'python monitor_cron_jobs.py'
                 }
             }
         }
@@ -23,7 +22,7 @@ pipeline {
             steps {
                 script {
                     // Check the status of your jobs and send email notifications if needed
-                    if (jobIsOffline) {
+                    if () {
                         emailext(
                             subject: 'CRON Job Offline',
                             body: 'One or more CRON jobs are offline.',

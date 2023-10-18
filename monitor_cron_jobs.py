@@ -1,38 +1,37 @@
 import psycopg2
 from datetime import datetime
 
-# Establish a PostgreSQL connection
-conn = psycopg2.connect(
-    dbname="cron_jobs",
-    user="postgres",
-    password="123456",
-    host="5432"
-)
+def check_cron_jobs_status():
+    # Database connection parameters
+    db_params = {
+        'database': 'cron_jobs',
+        'user': 'postgres',
+        'password': '123456',
+        'host': 'localhost',
+        'port': '5432'
+    }
 
-cursor = conn.cursor()
+    # Connect to the database
+    connection = psycopg2.connect(**db_params)
+    cursor = connection.cursor()
 
-# Define a function to check the job status
-def check_job_status(job_name):
-    query = "SELECT is_online, next_run FROM cron_jobs WHERE job_name = %s"
-    cursor.execute(query, (job_name,))
-    result = cursor.fetchone()
+    # Query to select job_name and is_online from the cron_jobs table
+    query = "SELECT job_name, is_online FROM cron_jobs"
 
-    if result:
-        is_online, next_run = result
-        current_time = datetime.now()
+    try:
+        cursor.execute(query)
+        records = cursor.fetchall()
+        for record in records:
+            job_name, is_online = record
+            if not is_online:
+                print(f'Job Name: {job_name}, Status: Offline')
 
-        if is_online and next_run <= current_time:
-            return "Online"  # Job is online and next run time is in the past
-        else:
-            return "Offline"  # Job is offline or next run time is in the future
-    else:
-        return "Not Found"  # Job with that name not in the database
+    except Exception as e:
+        print(f"Error: {str(e)}")
+    finally:
+        cursor.close()
+        connection.close()
 
-# Example usage
-job_name = "your_job_name"
-status = check_job_status(job_name)
-print(f"Status of {job_name}: {status}")
+if __name__ == "__main__":
+    check_cron_jobs_status()
 
-conn.commit()
-cursor.close()
-conn.close()
