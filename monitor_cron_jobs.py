@@ -3,10 +3,10 @@ from datetime import datetime
 
 # Establish a PostgreSQL connection
 conn = psycopg2.connect(
-    dbname="your_db_name",
-    user="your_db_user",
-    password="your_db_password",
-    host="your_db_host"
+    dbname="cron_jobs",
+    user="postgres",
+    password="123456",
+    host="5432"
 )
 
 cursor = conn.cursor()
