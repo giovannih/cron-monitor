@@ -12,7 +12,7 @@ pipeline {
         stage('Monitor CRON Jobs') {
            steps {
                 script {
-                    def scriptPath = "${WORKSPACE}\\check_cron_jobs_status.py"
+                    def scriptPath = "${WORKSPACE}\\monitor_cron_jobs.py"
                     def offlineJobs = bat(script: "python ${scriptPath}", returnStatus: true, returnStdout: true).trim()
                     
                     // Parse the JSON string to get the list of offline jobs
