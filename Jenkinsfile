@@ -1,10 +1,11 @@
+def offlineJobs // Define offlineJobs at a higher scope
+
 pipeline {
     agent any
 
     stages {
         stage('Checkout Code') {
             steps {
-                // Use the "checkout" step to retrieve code from the VCS repository
                 checkout scm
             }
         }
@@ -13,16 +14,15 @@ pipeline {
             steps {
                 script {
                     def scriptPath = "${WORKSPACE}\\monitor_cron_jobs.py"
-                    def scriptOutput = bat(script: "python ${scriptPath}", returnStatus: true, returnStdout: true)
-                    // Capture the script's output for later use
-                    // Parse the JSON string to get the list of offline jobs
-                    def offlineJobsList = readJSON text: scriptOutput
+                    offlineJobs = bat(script: "python ${scriptPath}", returnStatus: true, returnStdout: true).trim()
+                    
+                    // Parse the output string into a list
+                    def offlineJobsList = offlineJobs.tokenize('\n')
 
                     // Iterate over the offline jobs
                     for (jobName in offlineJobsList) {
                         echo "Offline Job: ${jobName}"
                     }
-                    echo "Python script executed successfully"
                 }
             }
         }
@@ -30,27 +30,15 @@ pipeline {
         stage('Send Email Notifications') {
             steps {
                 script {
-                    // Check if there are offline jobs
-                    if (offlineJobsList) {                        // Construct the email body with offline job names
-                        withCredentials([usernamePassword(credentialsId: 'gmail', usernameVariable: 'SMTP_USERNAME', passwordVariable: 'SMTP_PASSWORD')]) {
-                          emailext(
+                    if (offlineJobs) {
+                        emailext(
                             subject: 'CRON Jobs Offline',
-                            body: "The following CRON jobs are offline:\n${offlineJobsList.join('\n')}",
-                            to: 'giovanniharrius@gmail.com',
-                            replyTo: 'giovanniharrius@gmail.com'
-                            )  
-                        }
-                        // Send email notification
-                        
+                            body: "The following CRON jobs are offline:\n${offlineJobs}",
+                            to: 'giovanni.harrius@sat.co.id',
+                            replyTo: 'giovanni.harrius@sat.co.id'
+                        )
                     }
                 }
-         
-            
-   }
-        post {
-                always {
-                    archiveArtifacts artifacts: 'output.log', allowEmptyArchive: true
-                    }
             }
         }
     }
