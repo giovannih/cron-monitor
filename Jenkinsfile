@@ -1,11 +1,10 @@
-def offlineJobs // Define offlineJobs at a higher scope
-
 pipeline {
     agent any
 
     stages {
         stage('Checkout Code') {
             steps {
+                // Use the "checkout" step to retrieve code from the VCS repository
                 checkout scm
             }
         }
@@ -15,12 +14,8 @@ pipeline {
                 script {
                     def scriptPath = "${WORKSPACE}\\monitor_cron_jobs.py"
                     def scriptOutput = bat(script: "python ${scriptPath}", returnStatus: true, returnStdout: true)
-                    if (scriptOutput != 0) {
-                        // The script ran successfully
-                        offlineJobs = scriptOutput.readLines()
-                    } else {
-                        error("Error running the script.")
-                    }
+                    // Capture the script's output for later use
+                    currentBuild.description = scriptOutput
                 }
             }
         }
@@ -28,23 +23,32 @@ pipeline {
         stage('Send Email Notifications') {
             steps {
                 script {
-                    if (offlineJobs) {
-                        // Iterate over the offline jobs and print them
-                        for (jobName in offlineJobs) {
-                            echo "Offline Job: ${jobName}"
+                    // Get the captured script output
+                    def scriptOutput = currentBuild.description
+
+                    // Check if there are offline jobs
+                    if (scriptOutput) {
+                        // Split the output into a list of offline job names
+                        def offlineJobsList = scriptOutput.split('\n').collect { it - "- " }
+
+                        // Construct the email body with offline job names
+                        def emailBody = "The following CRON jobs are offline:\n\n"
+                        offlineJobsList.each { jobName ->
+                            emailBody += "- $jobName\n"
                         }
                         withCredentials([usernamePassword(credentialsId: 'gmail', usernameVariable: 'SMTP_USERNAME', passwordVariable: 'SMTP_PASSWORD')]) {
-                            emailext(
-                                subject: 'CRON Jobs Offline',
-                                body: "The following CRON jobs are offline:\n${offlineJobs.join('\n')}",
-                                to: 'giovanni.harrius@sat.co.id',
-                                replyTo: 'giovanni.harrius@sat.co.id'
-                            )
-                    }
+                          emailext(
+                            subject: 'CRON Jobs Offline',
+                            body: emailBody,
+                            to: 'giovanniharrius@gmail.com',
+                            replyTo: 'giovanniharrius@gmail.com'
+                            )  
+                        }
+                        // Send email notification
+                        
                     }
                 }
             }
         }
     }
 }
-
