@@ -1,4 +1,5 @@
 import psycopg2
+import json
 
 def check_cron_jobs_status():
     # Database connection parameters
@@ -23,29 +24,21 @@ def check_cron_jobs_status():
     try:
         cursor.execute(query)
         records = cursor.fetchall()
-        print("=============== Console Job =================")
-        print("All records:")
+
         for record in records:
-            print(record)
             job_name, is_online = record
             if not is_online:
                 offline_jobs.append(job_name)  # Add the offline job name to the list
 
-        # Check if there are offline jobs
-        if offline_jobs:
-            # Print the names of offline jobs
-            print("=============== Console Job =================")
-            print("The following CRON jobs are offline:")
-            for job_name in offline_jobs:
-                print(f'- {job_name}')
-        else:
-            print("All CRON jobs are online.")
+        # Return the list of offline jobs as a JSON string
+        return json.dumps(offline_jobs)
 
     except Exception as e:
-        print(f"Error: {str(e)}")
+        return json.dumps({"error": str(e)})
     finally:
         cursor.close()
         connection.close()
 
 if __name__ == "__main__":
-    check_cron_jobs_status()
+    offline_jobs = check_cron_jobs_status()
+    print(offline_jobs)
