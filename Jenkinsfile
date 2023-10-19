@@ -28,7 +28,7 @@ pipeline {
                     for (def jobName : offlineJobs) {
                         echo "Offline Job: ${jobName}"
                     }
-                    currentBuild.description = jsonData
+                    currentBuild.description = jsonData as String
                 }
             }
         }
@@ -38,12 +38,7 @@ pipeline {
                 script {
                     def scriptOutput = currentBuild.description
                     if (scriptOutput) {
-                        def emailBody = "The following CRON jobs are offline:\n\n"
-                        for (item in scriptOutput) {
-                            emailBody += "- ${item}\n" 
-                        }
-                            
-                        
+                        def emailBody = "The following CRON jobs are offline:\n\n ${scriptOutput}"
                         withCredentials([usernamePassword(credentialsId: 'gmail', usernameVariable: 'SMTP_USERNAME', passwordVariable: 'SMTP_PASSWORD')]) {
 
                             emailext(
