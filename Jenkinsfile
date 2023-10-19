@@ -17,6 +17,7 @@ pipeline {
                     // Capture the script's output for later use
                     currentBuild.description = scriptOutput
                     echo "Python script executed successfully"
+                    echo "Python Script Output: ${scriptOutput}"
                 }
             }
         }
@@ -26,7 +27,7 @@ pipeline {
                 script {
                     // Get the captured script output
                     def scriptOutput = currentBuild.description
-
+                    echo "Python Script Output: ${scriptOutput}"
                     // Check if there are offline jobs
                     if (scriptOutput) {
                         // Extract the list of offline job names from the script output
