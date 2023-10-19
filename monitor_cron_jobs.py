@@ -23,7 +23,10 @@ def check_cron_jobs_status():
     try:
         cursor.execute(query)
         records = cursor.fetchall()
+        print("=============== Console Job =================")
+        print("All records:")
         for record in records:
+            print(record)
             job_name, is_online = record
             if not is_online:
                 offline_jobs.append(job_name)  # Add the offline job name to the list
@@ -31,6 +34,7 @@ def check_cron_jobs_status():
         # Check if there are offline jobs
         if offline_jobs:
             # Print the names of offline jobs
+            print("=============== Console Job =================")
             print("The following CRON jobs are offline:")
             for job_name in offline_jobs:
                 print(f'- {job_name}')
