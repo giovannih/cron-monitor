@@ -39,7 +39,7 @@ pipeline {
                     def scriptOutput = currentBuild.description
                     if (scriptOutput) {
                         def emailBody = "The following CRON jobs are offline:\n\n"
-                        for (item in jsonData) {
+                        for (item in scriptOutput) {
                             emailBody += "- ${item}\n" 
                         }
                             
