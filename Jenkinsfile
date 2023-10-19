@@ -36,14 +36,16 @@ pipeline {
                         offlineJobsList.each { jobName ->
                             emailBody += "- $jobName\n"
                         }
-
-                        // Send email notification
-                        emailext(
+                        withCredentials([usernamePassword(credentialsId: 'your-credentials-id', usernameVariable: 'SMTP_USERNAME', passwordVariable: 'SMTP_PASSWORD')]) {
+                          emailext(
                             subject: 'CRON Jobs Offline',
                             body: emailBody,
                             to: 'giovanniharrius@gmail.com',
                             replyTo: 'giovanniharrius@gmail.com'
-                        )
+                            )  
+                        }
+                        // Send email notification
+                        
                     }
                 }
             }
