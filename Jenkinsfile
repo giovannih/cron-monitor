@@ -28,14 +28,13 @@ pipeline {
                     for (def jobName : offlineJobs) {
                         echo "Offline Job: ${jobName}"
                     }
-
-                    // Store the email body
-                    def emailBody = jsonData as String
+                    currentBuild.description = jsonData as String
                 }
             }
         }
 
         stage('Send Email Notifications') {
+            emailBody = currentBuild.description
             steps {
                 script {
                     if (emailBody) {
