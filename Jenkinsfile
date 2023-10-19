@@ -16,7 +16,7 @@ pipeline {
                     def scriptOutput = bat(script: "python ${scriptPath}", returnStatus: true, returnStdout: true)
                     // Capture the script's output for later use
                     // Parse the JSON string to get the list of offline jobs
-                    def offlineJobsList = readJSON text: offlineJobs
+                    def offlineJobsList = readJSON text: scriptOutput
 
                     // Iterate over the offline jobs
                     for (jobName in offlineJobsList) {
