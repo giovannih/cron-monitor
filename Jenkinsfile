@@ -13,8 +13,13 @@ pipeline {
         stage('Monitor CRON Jobs') {
             steps {
                 script {
-                    def scriptPath = "${WORKSPACE}\\monitor_cron_jobs.py"
-                    offlineJobs = bat(script: "python ${scriptPath}", returnStatus: true, returnStdout: true).trim()
+                    def scriptPath = "${WORKSPACE}\\check_cron_jobs_status.py"
+                    def scriptOutput = bat(script: "python ${scriptPath}", returnStatus: true, returnStdout: true)
+                    if (scriptOutput == 0) {
+                        error("Error running the script.")
+                    }
+                    
+                    offlineJobs = scriptOutput.trim()
                     
                     // Parse the output string into a list
                     def offlineJobsList = offlineJobs.tokenize('\n')
