@@ -34,7 +34,7 @@ pipeline {
         }
 
         stage('Send Email Notifications') {
-            emailBody = currentBuild.description
+            def emailBody = currentBuild.description
             steps {
                 script {
                     if (emailBody) {
