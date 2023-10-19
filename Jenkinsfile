@@ -15,18 +15,11 @@ pipeline {
                 script {
                     def scriptPath = "${WORKSPACE}\\check_cron_jobs_status.py"
                     def scriptOutput = bat(script: "python ${scriptPath}", returnStatus: true, returnStdout: true)
-                    if (scriptOutput == 0) {
+                    if (scriptOutput != 0) {
+                        // The script ran successfully
+                        offlineJobs = scriptOutput.readLines()
+                    } else {
                         error("Error running the script.")
-                    }
-                    
-                    offlineJobs = scriptOutput.trim()
-                    
-                    // Parse the output string into a list
-                    def offlineJobsList = offlineJobs.tokenize('\n')
-
-                    // Iterate over the offline jobs
-                    for (jobName in offlineJobsList) {
-                        echo "Offline Job: ${jobName}"
                     }
                 }
             }
@@ -36,15 +29,22 @@ pipeline {
             steps {
                 script {
                     if (offlineJobs) {
-                        emailext(
-                            subject: 'CRON Jobs Offline',
-                            body: "The following CRON jobs are offline:\n${offlineJobs}",
-                            to: 'giovanni.harrius@sat.co.id',
-                            replyTo: 'giovanni.harrius@sat.co.id'
-                        )
+                        // Iterate over the offline jobs and print them
+                        for (jobName in offlineJobs) {
+                            echo "Offline Job: ${jobName}"
+                        }
+                        withCredentials([usernamePassword(credentialsId: 'gmail', usernameVariable: 'SMTP_USERNAME', passwordVariable: 'SMTP_PASSWORD')]) {
+                            emailext(
+                                subject: 'CRON Jobs Offline',
+                                body: "The following CRON jobs are offline:\n${offlineJobs.join('\n')}",
+                                to: 'giovanni.harrius@sat.co.id',
+                                replyTo: 'giovanni.harrius@sat.co.id'
+                            )
+                    }
                     }
                 }
             }
         }
     }
 }
+
