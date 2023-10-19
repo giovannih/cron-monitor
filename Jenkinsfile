@@ -15,8 +15,13 @@ pipeline {
                     def scriptOutput = bat(script: "python ${scriptPath}", returnStdout: true).trim()
                     echo "Python Script Output:\n${scriptOutput}"
 
+                    // Extract the JSON portion from the script output
+                    def startIndex = scriptOutput.indexOf('[')
+                    def endIndex = scriptOutput.lastIndexOf(']')
+                    def jsonOutput = scriptOutput.substring(startIndex, endIndex + 1)
+
                     // Parse the JSON output from the Python script
-                    def jsonData = readJSON text: scriptOutput
+                    def jsonData = readJSON text: jsonOutput
                     def offlineJobs = jsonData as List<String>
 
                     // Iterate over offline jobs
