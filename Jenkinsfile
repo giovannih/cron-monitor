@@ -34,9 +34,9 @@ pipeline {
         }
 
         stage('Send Email Notifications') {
-            def emailBody = currentBuild.description
             steps {
                 script {
+                    def emailBody = currentBuild.description
                     if (emailBody) {
                         withCredentials([usernamePassword(credentialsId: 'gmail', usernameVariable: 'SMTP_USERNAME', passwordVariable: 'SMTP_PASSWORD')]) {
 
