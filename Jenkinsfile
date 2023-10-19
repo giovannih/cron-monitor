@@ -36,7 +36,7 @@ pipeline {
                         offlineJobsList.each { jobName ->
                             emailBody += "- $jobName\n"
                         }
-                        withCredentials([usernamePassword(credentialsId: 'your-credentials-id', usernameVariable: 'SMTP_USERNAME', passwordVariable: 'SMTP_PASSWORD')]) {
+                        withCredentials([usernamePassword(credentialsId: 'gmail', usernameVariable: 'SMTP_USERNAME', passwordVariable: 'SMTP_PASSWORD')]) {
                           emailext(
                             subject: 'CRON Jobs Offline',
                             body: emailBody,
