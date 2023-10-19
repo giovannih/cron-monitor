@@ -51,12 +51,13 @@ pipeline {
                     }
                 }
          
-            post {
+            
+   }
+        post {
                 always {
                     archiveArtifacts artifacts: 'output.log', allowEmptyArchive: true
                     }
             }
-   }
         }
     }
 }
