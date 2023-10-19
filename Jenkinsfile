@@ -28,7 +28,7 @@ pipeline {
                     for (def jobName : offlineJobs) {
                         echo "Offline Job: ${jobName}"
                     }
-                    currentBuild.description = jsonData as String
+                    currentBuild.description = jsonData
                 }
             }
         }
