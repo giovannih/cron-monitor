@@ -27,9 +27,10 @@ pipeline {
                     def scriptOutput = currentBuild.description
 
                     // Check if there are offline jobs
-                    if (scriptOutput) {
-                        // Split the output into a list of offline job names
-                        def offlineJobsList = scriptOutput.split('\n').collect { it - "- " }
+                    if (scriptOutput.contains("The following CRON jobs are offline:")) {
+                        // Extract the list of offline job names from the script output
+                        def offlineJobsList = scriptOutput.tokenize('-').collect { it.trim() }
+                        offlineJobsList = offlineJobsList.findAll { it }
 
                         // Construct the email body with offline job names
                         def emailBody = "The following CRON jobs are offline:\n\n"
