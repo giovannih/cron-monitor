@@ -36,8 +36,14 @@ pipeline {
         stage('Send Email Notifications') {
             steps {
                 script {
-                    def emailBody = currentBuild.description
-                    if (emailBody) {
+                    def scriptOutput = currentBuild.description
+                    if (scriptOutput) {
+                        def emailBody = "The following CRON jobs are offline:\n\n"
+                        for (item in jsonData) {
+                            emailBody += "- ${item}\n" 
+                        }
+                            
+                        
                         withCredentials([usernamePassword(credentialsId: 'gmail', usernameVariable: 'SMTP_USERNAME', passwordVariable: 'SMTP_PASSWORD')]) {
 
                             emailext(
