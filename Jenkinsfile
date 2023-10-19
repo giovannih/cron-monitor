@@ -16,6 +16,7 @@ pipeline {
                     def scriptOutput = bat(script: "python ${scriptPath}", returnStatus: true, returnStdout: true)
                     // Capture the script's output for later use
                     currentBuild.description = scriptOutput
+                    echo "Python script executed successfully"
                 }
             }
         }
@@ -27,7 +28,7 @@ pipeline {
                     def scriptOutput = currentBuild.description
 
                     // Check if there are offline jobs
-                    if (scriptOutput.contains("The following CRON jobs are offline:")) {
+                    if (scriptOutput) {
                         // Extract the list of offline job names from the script output
                         def offlineJobsList = scriptOutput.tokenize('-').collect { it.trim() }
                         offlineJobsList = offlineJobsList.findAll { it }
@@ -49,7 +50,13 @@ pipeline {
                         
                     }
                 }
+         
+            post {
+                always {
+                    archiveArtifacts artifacts: 'output.log', allowEmptyArchive: true
+                    }
             }
+   }
         }
     }
 }
